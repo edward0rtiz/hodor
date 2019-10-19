@@ -1,13 +1,13 @@
 #!/usr/bin/python3
 
 import requests
-from bs4 import BeautifulSoup
 import os
 import pytesseract
 try:
     import Image
 except ImportError:
     from PIL import Image
+from bs4 import BeautifulSoup
 
 
 imgip = "http://158.69.76.135"
@@ -22,12 +22,13 @@ header = {
 vote = {
 
     "id": "931",
-    "holdthedoor": "submit",
+    "holdthedoor": "Submit",
     "key": "",
     "captcha": ""
 }
 
 if __name__ == "__main__":
+
     for i in range (0, 1024):
         s = requests.session()
         p = s.get(php, headers=header)
@@ -41,9 +42,8 @@ if __name__ == "__main__":
         imgcap = open("captcha.png", "wb")
         imgcap.write(s.get(cap).content)
         imgcap.close()
+        ca = pytesseract.image_to_string("captcha.png")
         os.remove("captcha.png")
-        vote["captcha"] = imgcap
+        vote["captcha"] = ca
 
         r = s.post(php, headers=header, data=vote)
-        if str(r.content) != " i am not a robot":
-            return

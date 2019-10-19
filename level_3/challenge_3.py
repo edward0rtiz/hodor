@@ -1,14 +1,13 @@
 #!/usr/bin/python3
 
 import requests
-import pytesseract
 from bs4 import BeautifulSoup
 import os
-
+import pytesseract
 try:
-    from PIL import Image
-except ImportError:
     import Image
+except ImportError:
+    from PIL import Image
 
 
 imgip = "http://158.69.76.135"
@@ -38,9 +37,13 @@ if __name__ == "__main__":
         vote["key"] = hv["value"]
 
         cap = soup.find("form", {"method": "post"}).find("img")
-        cap = imgip + cp["src"]
-        imgcap = open("captcha.png")
+        cap = imgip + cap["src"]
+        imgcap = open("captcha.png", "wb")
+        imgcap.write(s.get(cap).content)
+        imgcap.close()
         os.remove("captcha.png")
         vote["captcha"] = imgcap
 
-        s.post(php, headers=header, data=vote)
+        r = s.post(php, headers=header, data=vote)
+        if str(r.content) != " i am not a robot":
+            return
